@@ -41,8 +41,8 @@ class Movies extends Component {
     const { length: count } = this.state.movies;
     if (count === 0) return <h1>No movies in the database</h1>;
 
-    const { movies: AllMovies, currentPage, pageSize } = this.state;
-    const movies = paginate(AllMovies, currentPage, pageSize);
+    const { movies: allMovies, currentPage, pageSize } = this.state;
+    const movies = paginate(allMovies, currentPage, pageSize);
 
     return (
       <React.Fragment>
@@ -54,6 +54,7 @@ class Movies extends Component {
               <th>Genre</th>
               <th>Stock</th>
               <th>Rate</th>
+              <th></th>
               <th></th>
             </tr>
           </thead>
