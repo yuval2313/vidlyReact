@@ -4,7 +4,7 @@ const Like = ({ liked, onClick }) => {
   else classes += "-o-up";
 
   return (
-    <div onClick={onClick} style={{ cursor: "pointer" }}>
+    <div onClick={onClick} className="clickable">
       <i className={classes} aria-hidden="true"></i>
     </div>
   );
