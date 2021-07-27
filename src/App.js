@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Route, Switch, Redirect } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
+import detectZoom from "detect-zoom";
 
 import NavBar from "./components/navbar";
 import Movies from "./components/movies";
@@ -22,9 +23,18 @@ class App extends Component {
   state = {};
 
   componentDidMount() {
+    this.handleZoom();
+
     const user = auth.getCurrentUser();
     this.setState({ user });
   }
+
+  handleZoom = () => {
+    const zoom = detectZoom.zoom();
+    const device = detectZoom.device();
+
+    if (zoom !== 1 || device !== 1.5) toast("Please set zoom to 150%");
+  };
 
   render() {
     const { user } = this.state;
