@@ -11,6 +11,8 @@ import "font-awesome/css/font-awesome.css";
 
 // logger.init(); // decided not to use sentry yet
 
+console.log(process.env);
+
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>

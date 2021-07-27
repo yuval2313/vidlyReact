@@ -14,6 +14,7 @@ import {
   mapToViewModel,
 } from "../services/movieService";
 import { getGenres } from "../services/genreService";
+
 import { paginate } from "../utils/paginate";
 
 import _ from "lodash";
@@ -30,8 +31,8 @@ class Movies extends Component {
   };
 
   async componentDidMount() {
-    const dbGenres = await getGenres();
-    const dbMovies = await getMovies();
+    const { data: dbGenres } = await getGenres();
+    const { data: dbMovies } = await getMovies();
 
     const selectedGenre = { name: "All Genres" };
     const genres = [selectedGenre, ...dbGenres];
@@ -57,22 +58,33 @@ class Movies extends Component {
     try {
       await deleteMovie(movie._id);
     } catch (ex) {
-      if (ex.response && ex.response.status === 404)
-        toast.error("This movie has already been deleted.");
+      const { response } = ex;
+      if (response) toast.error(`${response.status} - ${response.data}`);
 
       this.setState({ movies: originalMovies });
     }
   };
 
   handleLike = async (movie) => {
-    const movies = [...this.state.movies];
+    const originalMovies = this.state.movies;
+
+    const movies = [...originalMovies];
     const index = movies.indexOf(movie);
     movies[index] = { ...movie };
     movies[index].liked = !movies[index].liked;
 
-    await saveMovie(mapToViewModel(movies[index])); // saving like to db, mapping to view model because of 'genre' object property--> should be 'genreId'
-
     this.setState({ movies });
+
+    try {
+      await saveMovie(mapToViewModel(movies[index]));
+    } catch (ex) {
+      const { response } = ex;
+      if (response) {
+        toast.error(`${response.status} - ${response.data}`);
+      }
+
+      this.setState({ movies: originalMovies });
+    }
   };
 
   handlePageChange = (page) => {
@@ -131,10 +143,8 @@ class Movies extends Component {
   };
 
   render() {
-    const { length: count } = this.state.movies;
-    if (count === 0) return <h1>No movies in the database</h1>;
-
     const { sortColumn, pageSize, currentPage, searchQuery } = this.state;
+    const { user } = this.props;
 
     const { totalCount, data: movies } = this.getPagedData();
 
@@ -150,12 +160,14 @@ class Movies extends Component {
           />
         </div>
         <div className="col">
-          <button
-            onClick={this.handleNewMovie}
-            className="btn btn-primary mb-2"
-          >
-            New Movie
-          </button>
+          {user && (
+            <button
+              onClick={this.handleNewMovie}
+              className="btn btn-primary mb-2"
+            >
+              New Movie
+            </button>
+          )}
           <SearchBox value={searchQuery} onChange={this.handleSearch} />
           <p>Showing {totalCount} movies in the database</p>
           <MoviesTable

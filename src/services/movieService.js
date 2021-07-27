@@ -1,33 +1,32 @@
-import { apiUrl } from "../config.json";
 import http from "./httpService";
 
-const moviesEndpoint = apiUrl + "/movies/";
+const apiEndpoint = "/movies";
 
-export async function getMovies() {
-  const { data: dbMovies } = await http.get(moviesEndpoint);
-  return dbMovies;
+function movieUrl(movieId) {
+  return `${apiEndpoint}/${movieId}`;
 }
 
-export async function getMovie(movieId) {
-  const { data: dbMovie } = await http.get(moviesEndpoint + movieId);
-  return dbMovie;
+export function getMovies() {
+  return http.get(apiEndpoint);
 }
 
-export async function deleteMovie(movieId) {
-  const { data: dbMovie } = await http.delete(moviesEndpoint + movieId);
-  return dbMovie;
+export function getMovie(movieId) {
+  return http.get(movieUrl(movieId));
 }
 
-export async function saveMovie(movie) {
+export function deleteMovie(movieId) {
+  return http.delete(movieUrl(movieId));
+}
+
+export function saveMovie(movie) {
   const body = { ...movie };
   delete body._id;
 
   if (movie._id) {
-    const { data: dbMovie } = await http.put(moviesEndpoint + movie._id, body);
-    return dbMovie;
+    return http.put(movieUrl(movie._id), body);
   }
-  const { data: dbMovie } = await http.post(moviesEndpoint, body);
-  return dbMovie;
+
+  return http.post(apiEndpoint, body);
 }
 
 export function mapToViewModel(movie) {

@@ -14,6 +14,7 @@
     "css-what": "^5.0.1",
     "font-awesome": "^4.7.0",
     "joi": "^17.4.0",
+    "jwt-decode": "^3.1.2",
     "lodash": "^4.17.21",
     "mini-css-extract-plugin": "^1.1.0",
     "normalize-url": "^6.1.0",
