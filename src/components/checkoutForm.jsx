@@ -31,6 +31,7 @@ function CheckoutForm(props) {
     rental.movie = movie;
 
     setRental(rental);
+    console.log("rental: ", { rental });
   }
 
   async function doSubmit() {
