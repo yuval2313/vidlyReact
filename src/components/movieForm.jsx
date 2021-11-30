@@ -47,8 +47,6 @@ class MovieForm extends Form {
     }
   };
 
-  // mapToViewModel = (movie) => { ... } // exists in 'movieServices' module
-
   schema = {
     _id: Joi.string().allow(""),
     title: Joi.string().trim().required().label("Title"),
@@ -73,12 +71,17 @@ class MovieForm extends Form {
   render() {
     return (
       <div>
-        <h1 className="m-3">Movie Form</h1>
+        <h1 className="mb-3">Movie Form</h1>
         <form onSubmit={this.handleSubmit}>
           {this.renderInput("title", "Title", { autoFocus: true })}
-          {this.renderDropDown("genreId", "Genre", this.state.genres)}
+          {this.renderDropDown(
+            "genreId",
+            "Genre",
+            "Please Select a Genre...",
+            this.state.genres
+          )}
           {this.renderInput("numberInStock", "Number In Stock")}
-          {this.renderInput("dailyRentalRate", "Rate")}
+          {this.renderInput("dailyRentalRate", "Daily Rental Rate")}
           {this.renderSubmitButton("Save")}
         </form>
       </div>

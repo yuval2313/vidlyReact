@@ -5,6 +5,7 @@ const DropDown = ({
   label,
   error,
   items,
+  placeholder,
   textProperty,
   valueProperty,
   ...rest
@@ -13,7 +14,7 @@ const DropDown = ({
     <div className="form-group m-2">
       <label htmlFor={name}>{label}</label>
       <select className="form-select" name={name} id={name} {...rest}>
-        <option value="">Please Select a Genre...</option>
+        <option value="">{placeholder}</option>
         {items.map((item) => (
           <option key={item[valueProperty]} value={item[valueProperty]}>
             {item[textProperty]}

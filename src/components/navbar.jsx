@@ -1,26 +1,19 @@
-import React from "react";
+import React, { useContext } from "react";
 import { NavLink, Link } from "react-router-dom";
 
-const NavBar = ({ user }) => {
+import UserContext from "../context/userContext";
+
+const NavBar = () => {
+  const user = useContext(UserContext);
+
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
       <div className="container-fluid">
         <Link className="navbar-brand" to="/">
           Vidly
         </Link>
-        <button
-          className="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarSupportedContent"
-          aria-controls="navbarSupportedContent"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span className="navbar-toggler-icon"></span>
-        </button>
         <div className="collapse navbar-collapse" id="navbarSupportedContent">
-          <div className="navbar-nav me-auto mb-2 mb-lg-0">
+          <div className="navbar-nav">
             <NavLink className="nav-item nav-link" to="/movies">
               Movies
             </NavLink>
@@ -30,6 +23,8 @@ const NavBar = ({ user }) => {
             <NavLink className="nav-item nav-link" to="/rentals">
               Rentals
             </NavLink>
+          </div>
+          <div className="navbar-nav ms-auto">
             {!user ? (
               <React.Fragment>
                 <NavLink className="nav-item nav-link" to="/login">

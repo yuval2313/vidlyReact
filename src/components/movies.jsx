@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Link } from "react-router-dom";
 
 import { toast } from "react-toastify";
 
@@ -6,6 +7,8 @@ import Pagination from "./common/pagination";
 import ListGroup from "./common/listGroup";
 import MoviesTable from "./moviesTable";
 import SearchBox from "./common/searchBox";
+
+import UserContext from "../context/userContext";
 
 import {
   getMovies,
@@ -15,7 +18,7 @@ import {
 } from "../services/movieService";
 import { getGenres } from "../services/genreService";
 
-import { paginate } from "../utils/paginate";
+import { paginate } from "../utils/paginationUtils";
 
 import _ from "lodash";
 
@@ -41,13 +44,17 @@ class Movies extends Component {
   }
 
   componentDidUpdate() {
+    this.handlePageOverCount();
+  }
+
+  handlePageOverCount = () => {
     const { currentPage, movies, pageSize } = this.state;
     const { length: count } = movies;
 
     const pageCount = Math.ceil(count / pageSize);
 
     if (currentPage > pageCount) this.setState({ currentPage: pageCount });
-  }
+  };
 
   handleDelete = async (movie) => {
     const originalMovies = this.state.movies;
@@ -99,10 +106,6 @@ class Movies extends Component {
     this.setState({ sortColumn });
   };
 
-  handleNewMovie = () => {
-    this.props.history.push("/movies/new");
-  };
-
   handleSearch = (query) => {
     let { genres } = { ...this.state };
     this.setState({
@@ -144,47 +147,50 @@ class Movies extends Component {
 
   render() {
     const { sortColumn, pageSize, currentPage, searchQuery } = this.state;
-    const { user } = this.props;
-
     const { totalCount, data: movies } = this.getPagedData();
 
     return (
-      <div className="row">
-        <div className="col-3">
-          <ListGroup
-            items={this.state.genres}
-            selectedItem={this.state.selectedGenre}
-            textProperty="name"
-            valueProperty="_id"
-            onItemSelect={this.handleGenreSelect}
-          />
-        </div>
-        <div className="col">
-          {user && (
-            <button
-              onClick={this.handleNewMovie}
-              className="btn btn-primary mb-2"
-            >
-              New Movie
-            </button>
-          )}
-          <SearchBox value={searchQuery} onChange={this.handleSearch} />
-          <p>Showing {totalCount} movies in the database</p>
-          <MoviesTable
-            movies={movies}
-            sortColumn={sortColumn}
-            onLike={this.handleLike}
-            onDelete={this.handleDelete}
-            onSort={this.handleSort}
-          />
-          <Pagination
-            itemCount={totalCount}
-            pageSize={pageSize}
-            currentPage={currentPage}
-            onPageChange={this.handlePageChange}
-          />
-        </div>
-      </div>
+      <UserContext.Consumer>
+        {(user) => (
+          <div className="row">
+            <div className="col-3">
+              <ListGroup
+                items={this.state.genres}
+                selectedItem={this.state.selectedGenre}
+                textProperty="name"
+                valueProperty="_id"
+                onItemSelect={this.handleGenreSelect}
+              />
+            </div>
+            <div className="col">
+              {user && (
+                <Link to="/movies/new" className="btn btn-primary mb-2">
+                  Add New Movie
+                </Link>
+              )}
+              <SearchBox
+                value={searchQuery}
+                onChange={this.handleSearch}
+                description={"Filter by movie title"}
+              />
+              <MoviesTable
+                movies={movies}
+                sortColumn={sortColumn}
+                location={this.props.location}
+                onLike={this.handleLike}
+                onDelete={this.handleDelete}
+                onSort={this.handleSort}
+              />
+              <Pagination
+                itemCount={totalCount}
+                pageSize={pageSize}
+                currentPage={currentPage}
+                onPageChange={this.handlePageChange}
+              />
+            </div>
+          </div>
+        )}
+      </UserContext.Consumer>
     );
   }
 }

@@ -1,27 +1,47 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 
-import auth from "../services/authService";
-
 import Like from "./common/like";
 import Table from "./common/table";
 
+import UserContext from "../context/userContext";
+
+import auth from "../services/authService";
+
 class MoviesTable extends Component {
+  static contextType = UserContext;
+
   columns = [
     {
       path: "title",
       label: "Title",
       content: (movie) => (
-        <Link to={`/movies/${movie._id}`}>{movie.title}</Link>
+        <div>
+          <Link
+            to={this.getRentUrl(movie._id)}
+            className="btn btn-success btn-sm me-3"
+          >
+            Rent Movie
+          </Link>
+          <Link to={`/movies/${movie._id}`}>{movie.title}</Link>
+        </div>
       ),
     },
     { path: "genre.name", label: "Genre" },
     { path: "numberInStock", label: "Stock" },
-    { path: "dailyRentalRate", label: "Rate" },
+    {
+      path: "dailyRentalRate",
+      label: "Daily Rate",
+      content: (movie) => `${movie.dailyRentalRate}$`,
+    },
     {
       key: "like",
       content: (movie) => (
-        <Like liked={movie.liked} onClick={() => this.props.onLike(movie)} />
+        <Like
+          liked={movie.liked}
+          onClick={() => this.props.onLike(movie)}
+          disabled={!this.currentUser()}
+        />
       ),
     },
   ];
@@ -36,6 +56,27 @@ class MoviesTable extends Component {
         Delete
       </button>
     ),
+  };
+
+  getRentUrl = (movieId) => {
+    let url = `/rentals/${movieId}`;
+
+    if (this.props.location && this.props.location.state) {
+      const { state } = this.props.location;
+      const { data: params, path } = state;
+      console.log({ state });
+
+      if (path === "/rentals/:_id") url = `/rentals/${params._id}/${movieId}`;
+
+      if (path === "/rentals/:customerId/:movieId")
+        url = `/rentals/${params.customerId}/${movieId}`;
+    }
+
+    return url;
+  };
+
+  currentUser = () => {
+    return this.context;
   };
 
   constructor() {
